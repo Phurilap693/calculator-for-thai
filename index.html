@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เครื่องคิดเลข + ฟิสิกส์ ม.4</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="calculator">
+        <!-- ปุ่มสลับโหมด (Tabs) -->
+        <div class="mode-switcher">
+            <button class="tab-btn active" onclick="switchMode('basic')">ทั่วไป</button>
+            <button class="tab-btn" onclick="switchMode('geometry')">เรขาคณิต</button>
+            <button class="tab-btn" onclick="switchMode('physics')">ฟิสิกส์ ม.4</button>
+            <button class="tab-btn" onclick="switchMode('physics_m5')">ฟิสิกส์ ม.5</button>
+            <button class="tab-btn" onclick="switchMode('physics_m6')">ฟิสิกส์ ม.6</button> <!-- เพิ่มปุ่มนี้ -->
+        </div>
+
+        <!-- โหมดที่ 1: เครื่องคิดเลขทั่วไป -->
+        <div id="basic-mode" class="mode-content active">
+            <input type="text" id="display" readonly placeholder="0">
+            <div class="buttons">
+                <button onclick="clearDisplay()">C</button>
+                <button onclick="appendValue('/')">÷</button>
+                <button onclick="appendValue('*')">×</button>
+                <button onclick="appendValue('-')">-</button>
+
+                <button onclick="appendValue('7')">7</button>
+                <button onclick="appendValue('8')">8</button>
+                <button onclick="appendValue('9')">9</button>
+                <button onclick="appendValue('+')">+</button>
+
+                <button onclick="appendValue('4')">4</button>
+                <button onclick="appendValue('5')">5</button>
+                <button onclick="appendValue('6')">6</button>
+                <button onclick="calculateResult()" class="equal-btn">=</button>
+
+                <button onclick="appendValue('1')">1</button>
+                <button onclick="appendValue('2')">2</button>
+                <button onclick="appendValue('3')">3</button>
+                <button onclick="appendValue('0')">0</button>
+                <button onclick="appendValue('.')">.</button>
+            </div>
+        </div>
+
+        <!-- โหมดที่ 2: เรขาคณิต -->
+        <div id="geometry-mode" class="mode-content">
+            <div class="formula-select-group">
+                <label for="geo-select">เลือกสูตรเรขาคณิต:</label>
+                <select id="geo-select" onchange="renderGeoInputs()">
+                    <option value="square">สี่เหลี่ยมจัตุรัส (a²)</option>
+                    <option value="rect">สี่เหลี่ยมผืนผ้า (w × l)</option>
+                    <option value="triangle">สามเหลี่ยม (1/2 × b × h)</option>
+                    <option value="circle">วงกลม (πr²)</option>
+                    <option value="trapezoid">สี่เหลี่ยมคางหมู (1/2 × ผลบวกด้านคู่ขนาน × h)</option>
+                    <option value="rhombus">สี่เหลี่ยมขนมเปียกปูน (1/2 × d1 × d2)</option>
+                    <option value="ellipse">วงรี (π × a × b)</option>
+                </select>
+            </div>
+            <div id="geo-inputs-container"></div>
+            <button class="calc-formula-btn" onclick="calculateGeometry()">คำนวณพื้นที่</button>
+            <div class="formula-result" id="geo-result">ผลลัพธ์: -</div>
+        </div>
+
+        <!-- โหมดที่ 3: ฟิสิกส์ ม.4 -->
+        <div id="physics-mode" class="mode-content">
+            <div class="formula-select-group">
+                <label for="physics-select">เลือกสูตรฟิสิกส์ ม.4:</label>
+                <select id="physics-select" onchange="renderPhysicsInputs()">
+                    
+                    <optgroup label="1. การเคลื่อนที่แนวตรง">
+                        <option value="m1_v">หา v จาก u, a, t (v = u + at)</option>
+                        <option value="m1_s1">หา s จาก u, v, t [s = ((u+v)/2)t]</option>
+                        <option value="m1_s2">หา s จาก u, a, t (s = ut + 1/2 at²)</option>
+                        <option value="m1_s3">หา s จาก v, a, t (s = vt - 1/2 at²)</option>
+                        <option value="m1_v2">หา v² จาก u, a, s (v² = u² + 2as)</option>
+                    </optgroup>
+
+                    <optgroup label="2. แรงและกฎนิวตัน">
+                        <option value="m2_f">กฎข้อที่ 2 นิวตัน (ΣF = ma)</option>
+                        <option value="m2_w">น้ำหนัก (W = mg)</option>
+                        <option value="m2_friction">แรงเสียดทาน (f = μN)</option>
+                        <option value="m2_gravity">แรงดึงดูดระหว่างมวล (F = G m1 m2 / r²)</option>
+                    </optgroup>
+
+                    <optgroup label="3. โปรเจกไทล์">
+                        <option value="m3_vx">แกน x : ความเร็ว (vx = u cos θ)</option>
+                        <option value="m3_sx">แกน x : ระยะทาง (sx = vx × t)</option>
+                        <option value="m3_uy">แกน y : ความเร็วต้น (uy = u sin θ)</option>
+                    </optgroup>
+
+                    <optgroup label="4. การเคลื่อนที่แบบวงกลม">
+                        <option value="m4_fc">แรงสู่ศูนย์กลาง (Fc = mv² / r)</option>
+                        <option value="m4_ac">ความเร่งสู่ศูนย์กลาง (ac = v² / r)</option>
+                        <option value="m4_v_omega">ความเร็วเชิงเส้น (v = ωr)</option>
+                        <option value="m4_v_period">ความเร็วเชิงเส้นจากคาบ (v = 2πr / T)</option>
+                    </optgroup>
+
+                    <optgroup label="5. ฮาร์มอนิกอย่างง่าย (SHM)">
+                        <option value="m5_pendulum">คาบลูกตุ้มอย่างง่าย (T = 2π √(L/g))</option>
+                        <option value="m5_spring">คาบมวลติดสปริง (T = 2π √(m/k))</option>
+                        <option value="m5_freq">ความถี่ (f = 1 / T)</option>
+                    </optgroup>
+
+                    <optgroup label="6. งานและพลังงาน">
+                        <option value="m6_work">งาน (W = F s cos θ)</option>
+                        <option value="m6_ek">พลังงานจลน์ (Ek = 1/2 mv²)</option>
+                        <option value="m6_ep_g">พลังงานศักย์โน้มถ่วง (Ep = mgh)</option>
+                        <option value="m6_ep_s">พลังงานศักย์ยืดหยุ่น (Ep = 1/2 kx²)</option>
+                        <option value="m6_power">กำลัง (P = W / t)</option>
+                    </optgroup>
+
+                </select>
+            </div>
+            <div id="physics-inputs-container"></div>
+            <button class="calc-formula-btn" onclick="calculatePhysics()">คำนวณฟิสิกส์</button>
+            <div class="formula-result" id="physics-result">ผลลัพธ์: -</div>
+        </div>
+        <!-- 2. เพิ่มเนื้อหาโหมด ฟิสิกส์ ม.5 -->
+        <div id="physics-m5-mode" class="mode-content">
+            <div class="formula-select-group">
+                <label for="physics-m5-select">เลือกสูตรฟิสิกส์ ม.5:</label>
+                <select id="physics-m5-select" onchange="renderPhysicsM5Inputs()">
+                    
+                    <optgroup label="1. สมดุลกลและการหมุน">
+                        <option value="m5_rot_m">โมเมนต์ (M = F × d)</option>
+                        <option value="m5_rot_tau">ทอร์ก (τ = r F sinθ)</option>
+                        <option value="m5_rot_w">ความเร็วเชิงมุม (ω = 2πf)</option>
+                        <option value="m5_rot_v">ความสัมพันธ์เชิงเส้น-เชิงมุม (v = ωr)</option>
+                        <option value="m5_rot_l">โมเมนตัมเชิงมุม (L = Iω)</option>
+                    </optgroup>
+
+                    <optgroup label="2. คลื่นกลและแสงเชิงคลื่น">
+                        <option value="m5_wave_v">อัตราเร็วคลื่น (v = fλ)</option>
+                        <option value="m5_slit_bright">สลิตคู่ แถบสว่าง (d sinθ = nλ)</option>
+                        <option value="m5_slit_dark">สลิตคู่ แถบมืด (d sinθ = (n - 1/2)λ)</option>
+                        <option value="m5_grating">เกรตติง (d = 1 / N)</option>
+                    </optgroup>
+
+                    <optgroup label="3. แสงเชิงรังสี">
+                        <option value="m5_snell">กฎของสเนลล์ (n₁ sinθ₁ = n₂ sinθ₂)</option>
+                        <option value="m5_lens">สมการเลนส์และกระจก (1/f = 1/s + 1/s')</option>
+                        <option value="m5_mag">กำลังขยาย (m = -s'/s)</option>
+                    </optgroup>
+
+                    <optgroup label="4. เสียง">
+                        <option value="m5_sound_v">ความเร็วเสียงในอากาศ (v = 331 + 0.6T)</option>
+                        <option value="m5_sound_i">ความเข้มเสียง (I = P / 4πr²)</option>
+                        <option value="m5_sound_beta">ระดับความดัง (β = 10 log(I/I₀))</option>
+                    </optgroup>
+
+                    <optgroup label="5. ความร้อน แก๊ส เทอร์โมไดนามิกส์">
+                        <option value="m5_q_temp">ความร้อนเปลี่ยนอุณหภูมิ (Q = mcΔT)</option>
+                        <option value="m5_q_state">ความร้อนเปลี่ยนสถานะ (Q = mL)</option>
+                        <option value="m5_gas">กฎแก๊สอุดมคติ (PV = nRT)</option>
+                        <option value="m5_ek">พลังงานจลน์เฉลี่ยแก๊ส (Ek = 3/2 k_B T)</option>
+                        <option value="m5_u">พลังงานภายในระบบ (ΔU = Q - W)</option>
+                    </optgroup>
+
+                </select>
+        </div>
+            <div id="physics-m5-inputs-container"></div>
+            <button class="calc-formula-btn" onclick="calculatePhysicsM5()">คำนวณฟิสิกส์ ม.5</button>
+            <div class="formula-result" id="physics-m5-result">ผลลัพธ์: -</div>
+        </div>
+        <!-- 2. เพิ่มเนื้อหาโหมด ฟิสิกส์ ม.6 -->
+        <div id="physics-m6-mode" class="mode-content">
+            <div class="formula-select-group">
+                <label for="physics-m6-select">เลือกสูตรฟิสิกส์ ม.6:</label>
+                <select id="physics-m6-select" onchange="renderPhysicsM6Inputs()">
+                    
+                    <optgroup label="1. ไฟฟ้าสถิต">
+                        <option value="m6_electro_f">แรงระหว่างประจุ (F = k|q1 q2|/r²)</option>
+                        <option value="m6_electro_e">สนามไฟฟ้า (E = k|Q|/r²)</option>
+                        <option value="m6_electro_v">ศักย์ไฟฟ้า (V = kQ/r)</option>
+                        <option value="m6_electro_w">งานในการเคลื่อนประจุ (W = q(VB - VA))</option>
+                        <option value="m6_electro_c">ความจุไฟฟ้า (C = Q/V)</option>
+                        <option value="m6_electro_u">พลังงานสะสมในตัวเก็บประจุ (U = 1/2 CV²)</option>
+                    </optgroup>
+
+                    <optgroup label="2. ไฟฟ้ากระแส">
+                        <option value="m6_dc_i">กระแสไฟฟ้า (I = Q/t)</option>
+                        <option value="m6_dc_ohm">กฎของโอห์ม (V = IR)</option>
+                        <option value="m6_dc_rho">ความต้านทานสายไฟ (R = ρL/A)</option>
+                        <option value="m6_dc_power">กำลังไฟฟ้า (P = VI)</option>
+                        <option value="m6_dc_emf">วงจรมีแรงเคลื่อนไฟฟ้า (I = ΣE / (ΣR + Σr))</option>
+                    </optgroup>
+
+                    <optgroup label="3. แม่เหล็กและไฟฟ้า">
+                        <option value="m6_mag_fqv">แรงแม่เหล็กกระทำต่อประจุ (F = qvB sinθ)</option>
+                        <option value="m6_mag_fil">แรงแม่เหล็กกระทำต่อสายไฟ (F = ILB sinθ)</option>
+                        <option value="m6_mag_r">รัศมีการเคลื่อนที่ประจุ (r = mv / qB)</option>
+                        <option value="m6_ac_vrms">ค่า Effective/RMS (Vrms = Vmax / √2)</option>
+                        <option value="m6_ac_xc">ความต้านทานจินตภาพตัวเก็บประจุ (Xc = 1 / 2πfC)</option>
+                        <option value="m6_ac_xl">ความต้านทานจินตภาพขดลวด (Xl = 2πfL)</option>
+                        <option value="m6_ac_z">ความต้านทานเชิงซ้อน (Z = √(R² + (Xl - Xc)²))</option>
+                    </optgroup>
+
+                    <optgroup label="4. คลื่นแม่เหล็กไฟฟ้า">
+                        <option value="m6_emw_c">ความเร็วคลื่นแม่เหล็กไฟฟ้า (c = fλ)</option>
+                        <option value="m6_emw_i">ความเข้มคลื่น (I = P / 4πr²)</option>
+                        <option value="m6_emw_eb">ความสัมพันธ์สนาม (E / B = c)</option>
+                    </optgroup>
+
+                    <optgroup label="5. ฟิสิกส์อะตอม">
+                        <option value="m6_atom_e">พลังงานโฟตอน (E = hf = hc/λ)</option>
+                        <option value="m6_atom_photo">โฟโตอิเล็กทริก (Ek_max = hf - W)</option>
+                        <option value="m6_atom_en">ระดับพลังงานไฮโดรเจน (En = -13.6 / n² eV)</option>
+                        <option value="m6_atom_debroglie">ความยาวคลื่นเดอบรอยล์ (λ = h / mv)</option>
+                    </optgroup>
+
+                    <optgroup label="6. ฟิสิกส์นิวเคลียร์และอนุภาค">
+                        <option value="m6_nuc_decay">การสลายตัว (Nt = N0 (1/2)^(t / T1/2))</option>
+                        <option value="m6_nuc_act">อัตราการสลายตัว (A = λN)</option>
+                        <option value="m6_nuc_t12">ครึ่งชีวิต (T1/2 = 0.693 / λ)</option>
+                        <option value="m6_nuc_mass_energy">มวลพร่องเปลี่ยนเป็นพลังงาน (E = Δm × 931.5 MeV)</option>
+                    </optgroup>
+
+                </select>
+            </div>
+            <div id="physics-m6-inputs-container"></div>
+            <button class="calc-formula-btn" onclick="calculatePhysicsM6()">คำนวณฟิสิกส์ ม.6</button>
+            <div class="formula-result" id="physics-m6-result">ผลลัพธ์: -</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
