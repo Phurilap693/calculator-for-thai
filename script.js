@@ -6,7 +6,61 @@ function calculateResult() {
     try { display.value = eval(display.value); }
     catch (e) { display.value = 'Error'; }
 }
+// 1. ฟังก์ชันเพิ่มตัวเลข/เครื่องหมาย (ตรงกับ appendValue ใน HTML)
+function appendValue(val) {
+    const display = document.getElementById('display');
+    if (!display) return;
 
+    // ถ้าขึ้น Error อยู่ ให้ล้างออกก่อนเริ่มพิมพ์
+    if (display.value === 'Error' || display.value === 'NaN') {
+        display.value = '';
+    }
+
+    display.value += val;
+    scrollToRight(display); // ดันหน้าจอไปขวาสุดทันที
+}
+
+// 2. ฟังก์ชันคำนวณผลลัพธ์ (ตรงกับ calculateResult ใน HTML)
+function calculateResult() {
+    const display = document.getElementById('display');
+    if (!display) return;
+
+    let expr = display.value.trim();
+
+    // ลบเครื่องหมาย +, -, *, /, . ที่ตกค้างอยู่ท้ายสุดออกให้อัตโนมัติ (แก้ปัญหา 4+4+ = Error)
+    while (/[+\-*/.]$/.test(expr)) {
+        expr = expr.slice(0, -1);
+    }
+
+    if (!expr) {
+        display.value = '';
+        return;
+    }
+
+    try {
+        // คำนวณผลลัพธ์
+        let result = new Function('return ' + expr)();
+
+        if (Number.isFinite(result)) {
+            // ตัดทศนิยมส่วนเกิน (สูงสุด 8 ตำแหน่ง)
+            display.value = parseFloat(result.toFixed(8)).toString();
+        } else {
+            display.value = 'Error';
+        }
+    } catch (e) {
+        display.value = 'Error';
+    }
+
+    scrollToRight(display); // ดันผลลัพธ์ไปขวาสุด
+}
+
+// 3. ฟังก์ชันล้างหน้าจอ ปุ่ม C (ตรงกับ clearDisplay ใน HTML)
+function clearDisplay() {
+    const display = document.getElementById('display');
+    if (display) {
+        display.value = '';
+    }
+}
 // --- ส่วนสลับโหมด ---
 function switchMode(mode) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
